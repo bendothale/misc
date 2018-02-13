@@ -1,0 +1,76 @@
+#ssh tyger@britel21x1.telmate.cc
+#ssh tyger@tortel21x1.telmate.cc
+#ssh tyger@web1.oak.telmate.cc
+#ssh tyger@its.telmate.ca
+while getopts ':cCdfijkqvQW' opt; do
+  case $opt in
+    c)
+      echo "Connecting to Chef Server"
+      SERVERNAME="chef.telmate.com"
+      ;;
+    C)
+      echo "Connecting to Canada Server"
+      SERVERNAME="its.telmate.ca"
+      ;;
+    d)
+      echo "Connecting to DelayedJobs Server"
+      SERVERNAME="britel21x1.telmate.cc"
+      ;;
+    f)
+      echo "Connecting to JMS/FTP server"
+      SERVERNAME="oaktel4x2.telmate.cc"
+      ;;
+    i)
+      echo "Connecting to Intelmate Server"
+      SERVERNAME="tortel21x1.telmate.cc"
+      ;;
+    j)
+      echo "Connecting to JMS/FTP server"
+      SERVERNAME="oaktel21x1.telmate.cc"
+      ;;
+    k)
+      echo "Connecting to Kiosk server"
+      SERVERNAME="web1.oak.telmate.cc"
+      ;;
+    q)
+      echo "Connecting to QA server"
+      SERVERNAME="snap-qa-web2.telmate.com"
+      #SERVERNAME="torqueweb-qa2.telmate.com"
+      ;;
+    Q)
+      QUIETMODE=YES
+      ;;
+    s)
+      echo "Connecting to the sound server"
+      SERVERNAME="tyger@tts-qa.telmate.cc"
+      ;;
+    v)
+      echo "Connecting to the QA server"
+      SERVERNAME="tyger@snap-qa-web1.telmate.cc"
+      ;;
+    W)
+      echo "Connecting to the Wowza server"
+      SERVERNAME="tyger@netboot.sf-qa.ca.telmate.cc"
+      ;;
+    \?)
+      echo "Invalid option:  Usage is "
+      echo "  -j or -f    JMS/FTP server"
+      echo "  -d          DelayedJobs server"
+      echo "  -i          Intelmate server"
+      echo "  -k          Kiosk server"
+      echo "  -c          Chef server"
+      echo "  -C          Canada server"
+      echo "  -q          QA server"
+      echo "  -v          QA server"
+      echo "  -h          this help message"
+      echo "  -W          Wowza server"
+      exit
+      ;;
+  esac
+done
+
+#if "$QUIETMODE" -new ""
+#  echo $SERVERNAME
+#  exit
+#fi
+ssh tyger@$SERVERNAME

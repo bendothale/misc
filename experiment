@@ -1,0 +1,8 @@
+FIRST=$1
+SECOND=$2
+THIRD=$3
+FOURTH=$4
+echo "first = :$FIRST:"
+echo "second = :$SECOND:"
+echo "third = :$THIRD:"
+echo "fourth = :$FOURTH:"

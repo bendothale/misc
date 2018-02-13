@@ -1,0 +1,3 @@
+LINENUM=`expr "$1" : ".*:\(.*\):"`
+FILENAME=`expr "$1" : "\(.*\):.*:"`
+vim +$LINENUM $FILENAME

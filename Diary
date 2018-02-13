@@ -1,0 +1,2 @@
+FILENAME=`date +%y%m%d`
+vim +'set lbr' ~/notes/$FILENAME

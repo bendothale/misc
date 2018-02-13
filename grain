@@ -1,0 +1,2 @@
+#egrep --color=always -rain "$@" 2>/dev/null | grep -va .git
+gran -i "$@"

@@ -1,0 +1,5 @@
+DB=${1:--Dsnap_production}
+shift
+mysql -Dprotocom -uqa_appl_user -pMyD3@rQA_2013 -hqadb-fip.oak.telmate.cc
+
+#mysql -uroot -pja2lb3rd $DB $@

@@ -1,0 +1,2 @@
+DIR=${1:-~/Downloads}
+echo "$DIR/`ls -tr $DIR | tail -1`"

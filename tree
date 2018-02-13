@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+search = ARGV.first || '.'
+puts "search = #{search}"
+directories = `find #{search} | grep -v git`.split
+#directories = `find #{search} -type d`.split
+directories.each do | dir | 
+  indents = dir.split('/').count
+  tab = ''
+  (0..indents).each { tab << '   ' }
+  puts tab+dir.split('/').last
+end

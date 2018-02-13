@@ -1,0 +1,88 @@
+# Colors
+ESC_SEQ="\x1b["
+COL_RESET=$ESC_SEQ"39;49;00m"
+COL_RED=$ESC_SEQ"31;01m"
+COL_BOLD_RED=$ESC_SEQ"4;31;01m"
+COL_GREEN=$ESC_SEQ"32;01m"
+COL_YELLOW=$ESC_SEQ"33;01m"
+COL_ULINE_YELLOW=$ESC_SEQ"04;33;01m"
+COL_BOLD_YELLOW=$ESC_SEQ"04;33;01m"
+COL_BLUE=$ESC_SEQ"34;01m"
+COL_MAGENTA=$ESC_SEQ"35;01m"
+COL_ULINE_MAGENTA=$ESC_SEQ"04;35;01m"
+COL_CYAN=$ESC_SEQ"36;01m"
+
+#
+
+CURR_DAY=`date +%d`
+if [ "`cat ~/bin/lastday.dat`" != $CURR_DAY ]
+then
+  echo $CURR_DAY > ~/bin/lastday.dat
+  if [[ `date +%h` -gt 12 ]]
+  then
+    echo -e "${COL_ULINE_YELLOW}Hello, good to see you!${COL_RESET}, today's forecast is `weather`."
+  else
+    echo -e "${COL_ULINE_YELLOW}Good `date +%A` morning, glad to have you back!  Today's forecast is `weather`.${COL_RESET}"
+  fi
+fi
+
+POWER=`upower -i $(upower -e | grep BAT) | grep --color=never -E percentage|xargs|cut -d' ' -f2|sed s/%//`
+if [ "`upower -i $(upower -e | grep BAT) | grep discharging`" ]
+then
+  DIRECTION="-"
+else
+  DIRECTION="+"
+fi
+
+if [[ $POWER -le 70 ]]
+then
+  if [[ $POWER -le 15 ]]
+  then
+    POWEROUT="${COL_BOLD_RED}${DIRECTION}$POWER"
+  else
+    POWEROUT="${COL_RED}${DIRECTION}$POWER"
+  fi
+  PROMPT="${PROMPT}$POWEROUT%"
+fi
+
+HOUR=`date +%k`
+if [[ $HOUR -lt 10 ]]
+then
+  TIME="${COL_BLUE}$(date +%k:%M)"
+else
+  if [[ $HOUR -lt 14 ]]
+  then
+    TIME="${COL_CYAN}$(date +%k:%M)"
+  else
+    if [[ $HOUR -lt 16 ]]
+    then
+      TIME="${COL_MAGENTA}$(date +%k:%M)"
+    else
+      TIME="${COL_ULINE_MAGENTA}$(date +%k:%M)"
+    fi
+  fi
+fi
+PROMPT="${PROMPT}$TIME"
+
+BRANCH="${COL_GREEN}$(mybranch)"
+PROMPT="${PROMPT}$BRANCH"
+
+if [ "`pwd`" == "$HOME" ]
+then
+  PWD="${COL_YELLOW}|~"
+else
+  PWD="${COL_YELLOW}|$(basename `pwd`)"
+fi
+PROMPT="${PROMPT}${PWD}"
+
+PROMPT="${PROMPT}${COL_RESET}"
+
+if [ "`cat ~/bin/lastprompt.dat`" == "$PROMPT" ]
+then
+  echo "~:"
+  exit
+fi
+
+echo $PROMPT > ~/bin/lastprompt.dat
+
+echo -e "${PROMPT}\n:"

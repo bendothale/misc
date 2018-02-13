@@ -1,0 +1,5 @@
+dir=${1:-'.'}
+search=${2:-'.*'}
+find $dir | grep "$search"
+#echo $cmd
+#$cmd

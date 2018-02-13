@@ -1,0 +1,5 @@
+DEST=${2:-.}
+FROM=$1
+FROM_BASE=${FROM%/*}
+FROM_DIR=${FROM##*/}
+(cd $FROM_BASE && tar cf - $FROM_DIR) | (cd $DEST && tar xBvf -)

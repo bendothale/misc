@@ -1,0 +1,3 @@
+XXX="log $@"
+YYY=${1:-logs}
+grep -av $YYY

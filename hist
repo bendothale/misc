@@ -1,0 +1,3 @@
+LINES=${2:-10}
+STR=${1:- }
+history | grep -i $STR | tail -$LINES

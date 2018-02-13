@@ -1,0 +1,2 @@
+LINES=${1:-10}
+history | tail -$LINES

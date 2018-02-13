@@ -1,0 +1,1 @@
+mysql protocom -h qadb-fip.oak.telmate.cc -u support_user -P 3307 --password=f0ry0ur3y3sonly
