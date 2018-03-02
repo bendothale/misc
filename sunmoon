@@ -1,0 +1,80 @@
+#!/usr/bin/ruby
+
+require 'json'
+
+days_in_month = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+if ARGV[0].to_i % 4 == 0
+  days_in_month[2] = 29
+end
+
+def sunmoon month, day, year
+  date = month + '/' + day + '/' + year
+  input = JSON.parse `curl 'http://api.usno.navy.mil/rstt/oneday?date=#{date}&loc=Santa%20Cruz,%20CA' 2>/dev/null`
+
+  i=0
+  sun_rise = nil
+  sun_set = nil
+  moon_rise = ["0:00", 'a.m.', 'ST']
+  moon_set = ["0:00", 'a.m.', 'ST']
+
+  while(input['sundata'][i]) do
+    sun_rise = input['sundata'][i]['time'].split(' ') if(input['sundata'][i]['phen'] == 'R')
+    sun_set = input['sundata'][i]['time'].split(' ') if(input['sundata'][i]['phen'] == 'S')
+    i += 1
+  end
+
+  i =0
+  while(input['moondata'][i]) do
+    moon_rise = input['moondata'][i]['time'].split(' ') if(input['moondata'][i]['phen'] == 'R')
+    moon_set = input['moondata'][i]['time'].split(' ') if(input['moondata'][i]['phen'] == 'S')
+    i += 1
+  end
+
+#  sun_rise = input['sundata'][1]['time'].split(' ')
+#  sun_set = input['sundata'][3]['time'].split(' ')
+#  moon_rise = input['moondata'][2]['time'].split(' ')
+#  moon_set = input['moondata'][1]['time'].split(' ')
+
+  sun_hm = sun_rise[0].split(':')
+  moon_hm = moon_rise[0].split(':')
+
+  sun_abs = sun_hm[0].to_i * 60 + sun_hm[1].to_i
+
+  sun_rise[1].gsub!('.', '')
+  sun_set[1].gsub!('.', '')
+  moon_rise[1].gsub!('.', '')
+  moon_set[1].gsub!('.', '')
+
+  if sun_rise[1] == moon_rise[1]
+    moon_hm[0] = 0 if moon_hm[0].to_i == 12
+  else
+    moon_hm[0] = moon_hm[0].to_i + 12
+  end
+
+  moon_abs = moon_hm[0].to_i * 60 + moon_hm[1].to_i
+#  puts moon_rise.to_s + ' -- ' + moon_hm.to_s
+#  puts sun_rise.to_s + ' ++ ' + sun_hm.to_s
+
+  delta = moon_abs - sun_abs
+#  puts '>>> ' + sun_abs.to_s + ' >>> ' + moon_abs.to_s + ' >>> ' + delta.to_s
+
+  moon_rel = (delta / 60).to_s + ':' + (delta % 60).to_s
+
+#  puts sun_rise
+#  puts moon_rise
+#  puts sun_hm.to_s
+#  puts moon_hm.to_s
+#  puts sun_abs.to_s
+#  puts moon_abs.to_s
+
+  { :SunRise => sun_rise, :SunSet => sun_set, :MoonRise => moon_rise, :MoonSet => moon_set, :Moon_Rel =>moon_rel, :Delta => delta }
+end
+
+#puts "moon_rel = " + sunmoon("1", "15", "2018")
+output = []
+(1..days_in_month[ARGV[0].to_i]).each do | day |
+  output << sunmoon(ARGV[0], day.to_s, ARGV[1])
+end
+
+puts output.to_json

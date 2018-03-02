@@ -4,7 +4,7 @@ set expandtab
 set number
 set showcmd
 set cursorline
-#filetype indent on
+filetype indent on
 set wildmenu
 set showmatch
 set incsearch

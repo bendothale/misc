@@ -1,9 +1,223 @@
 #!/usr/bin/env ruby
 require 'json'
+require 'colorize'
+
+#temp_ranges = [ 30, 45, 60, 75, 90, 105 ]
+temp_ranges = [ 40, 50, 60, 70, 80, 90]
+tide_ranges = [ 35, 40, 45, 50, 55, 60 ]
+low_tide_ranges = [ 0, 4, 8, 12, 16, 20, 28 ]
+
 file_name = '/home/paul/bin/weather.json'
+
+def temp_color temp, val, range
+#  val = temp.to_i
+  if val < range[0]
+    temp.light_cyan
+  elsif val < range[1]
+    temp.light_white
+  elsif val < range[2]
+    temp.light_blue
+  elsif val < range[3]
+    temp.light_green
+  elsif val < range[4]
+    temp.light_yellow
+  elsif val < range[5]
+    temp.light_red
+  else
+    temp.light_magenta
+  end   
+end
+
+if ARGV[0] == '-h'
+  print "This program lists the following :
+     Day of week 
+     Date 
+     low-temp/high-temp 
+     forecast 
+     sunrise 
+     relative moon rise 
+     relative first high tide 
+     relative first low tide \n"
+ 
+  print "    temperature colors: "
+  temp_ranges.each do | temp |  
+    print( temp_color(temp.to_s, temp, temp_ranges) + ' ') 
+  end 
+  puts
+
+  print "    high tide colors: "
+  tide_ranges.each do | tide |  
+    print( temp_color(tide.to_s, tide, tide_ranges) + ' ') 
+  end 
+  puts
+  
+  print "    low tide colors: "
+  low_tide_ranges.each do | tide |  
+    print( temp_color(tide.to_s, tide, low_tide_ranges) + ' ') 
+  end 
+  puts
+  
+  exit
+end
+
+# calculate the sunrise and relative moon rise.
+
+def time_rel sunrise, moonrise
+
+#  puts sunrise.to_s
+#  puts moonrise.to_s
+  sun_hm = sunrise[0].split(':')
+  moon_hm = moonrise[0].split(':')
+  sun_abs = sun_hm[0].to_i * 60 + sun_hm[1].to_i
+  moon_abs = moon_hm[0].to_i * 60 + moon_hm[1].to_i
+
+  if sunrise[1] != moonrise[1] # moonrise is after noon
+    moon_abs += 12*60
+  else
+    moon_abs = moon_hm[1].to_i if moon_hm[0].to_i == 12
+  end
+
+  if moon_abs > sun_abs
+    moon_rel = moon_abs - sun_abs
+  else
+    moon_rel = (sun_abs - moon_abs) * -1
+  end
+
+  if moon_rel < 0
+    moon_time = (-1*(moon_rel.abs / 60)).to_s.rjust(2,' ') + ':' + (moon_rel.abs % 60).to_s.rjust(2, '0')
+  else
+    moon_time = (moon_rel / 60).to_s.rjust(2,' ') + ':' + (moon_rel % 60).to_s.rjust(2, '0')
+  end
+
+  moon_time
+
+end
+
+#
+#
+#
+
+def forecast_color fcast
+  if fcast == 'Mostly Cloudy'
+    fcast.light_blue
+  elsif fcast =~ /Sunny/
+    fcast.light_yellow
+  elsif fcast =~ /Cloudy/
+    fcast.yellow
+  elsif fcast =~ /Showers/
+    fcast.light_cyan
+  elsif fcast =~ /Rain/
+    fcast.cyan
+  else
+    fcast.white
+  end
+end
+
+#puts forecast_color('Mostly Cloudy')
+
+def format_date date
+  tmp = date.split(' ')
+  tmp[0]+' '+tmp[1]
+end
+
+def make_date date_string
+  tmp = date_string.split(' ')
+  months = { 'Jan' => 1, 'Feb' => 2, 'Mar' => 3, 'Apr' => 4, 'May' => 5, 'Jun' => 6, 'Jul' => 7, 'Aug' => 8, 'Sep' => 9, 'Oct' => 10, 'Nov' => 11, 'Dec' => 12};
+#  months[tmp[1]].to_s + '/' + tmp[0] + '/' + tmp[2]
+  { :Month => months[tmp[1]].to_s, :Day => tmp[0],  :Year => tmp[2] }
+end
+
+$tides_data = nil
+
+def get_tides_data date
+
+  if $tides_data == nil
+
+    tides_file_name = "/home/paul/bin/data/tides_#{date[:Year]+date[:Month].rjust(2, '0')}"
+
+    `~/bin/tides #{date[:Month]} #{date[:Year]} > #{tides_file_name}` if !File.exists? tides_file_name
+
+    $tides_data = JSON.parse File.read tides_file_name
+
+  end
+
+  $tides_data[date[:Day].to_i]
+end
+
+$sunmoon_data = nil
+
+def get_sunmoon_data date
+
+  if $sunmoon_data == nil
+
+    sunmoon_file_name = "/home/paul/bin/data/sunmoon_#{date[:Year]+date[:Month].rjust(2, '0')}"
+
+    `~/bin/sunmoon #{date[:Month]} #{date[:Year]} > #{sunmoon_file_name}` if !File.exists? sunmoon_file_name
+
+    $sunmoon_data = JSON.parse File.read sunmoon_file_name
+
+  end
+
+  $sunmoon_data[date[:Day].to_i-1]
+end
+
+if ARGV[0] == 'tides'
+
+  date_stuff = `date --date='#{ARGV[1] || 'today'}'`.split(' ') 
+  date_stuff ||= ARGV[1]
+  date = make_date "#{date_stuff[2]} #{date_stuff[1]} #{date_stuff[5]}"
+
+  sunmoon = get_sunmoon_data date
+  tides = get_tides_data date
+
+  moon_rel = time_rel(sunmoon['SunRise'], sunmoon['MoonRise'])
+
+  high_tide = temp_color(tides['High_1_Height'], (tides['High_1_Height'].to_f * 10.0).to_i, tide_ranges) 
+  low_tide = temp_color(tides['Low_1_Height'], (tides['Low_1_Height'].to_f * 10.0).to_i, low_tide_ranges) 
+
+  puts "Sun: #{sunmoon['SunRise'][0]} #{sunmoon['SunSet'][0]}"
+  puts "Moon: #{sunmoon['MoonRise'][0]} #{sunmoon['MoonSet'][0]}"
+  puts "1st High Tide: #{tides['High_1_Time']} #{high_tide} feet"
+  puts "1st Low Tide: #{tides['Low_1_Time']} #{low_tide} feet"
+
+  high_tide = temp_color(tides['High_2_Height'], (tides['High_2_Height'].to_f * 10.0).to_i, tide_ranges) 
+  low_tide = temp_color(tides['Low_2_Height'], (tides['Low_2_Height'].to_f * 10.0).to_i, low_tide_ranges) 
+
+  puts "2nd High Tide: #{tides['High_2_Time']} #{high_tide} feet"
+  puts "2nd Low Tide: #{tides['Low_2_Time']} #{low_tide} feet"
+
+  exit
+
+end
 
 # the following string was obtainedy by https://developer.yahoo.com/weather/
 
-`wget 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22half%20moon%20bay%2C%20ca%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys' --output-document=#{file_name} 2>/dev/null`
+`wget 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22pescadero%2C%20ca%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys' --output-document=#{file_name} 2>/dev/null`
 xyz = JSON.parse File.read file_name
-puts xyz['query']['results']['channel']['item']['forecast'][0]['text']
+#puts
+xyz['query']['results']['channel']['item']['forecast'].each do | fc | 
+
+  date = make_date(fc['date'])
+
+  sunmoon = get_sunmoon_data date
+  tides = get_tides_data date
+
+  moon_rel = time_rel(sunmoon['SunRise'], sunmoon['MoonRise'])
+  tide_rel = time_rel(sunmoon['SunRise'], tides['High_1_Time'].split(' '))
+  low_tide_rel = time_rel(sunmoon['SunRise'], tides['Low_1_Time'].split(' '))
+  low_temp = temp_color(fc['low'], fc['low'].to_i, temp_ranges)
+  high_temp = temp_color(fc['high'], fc['high'].to_i, temp_ranges)
+
+  sun_moon_tide = (
+      sunmoon['SunRise'][0].to_s.light_yellow + ' ' + 
+#      temp_color(moon_rel, moon_rel.to_i, moon_ranges) + ' ' + 
+      moon_rel.to_s + ' ' +
+      temp_color(tide_rel, (tides['High_1_Height'].to_f * 10.0).to_i, tide_ranges) + ' ' +
+      temp_color(low_tide_rel, (tides['Low_1_Height'].to_f * 10.0).to_i, low_tide_ranges) 
+    ).to_s.rjust(20,' ')
+  
+  puts '  '.light_white+fc['day']+' '+format_date(fc['date'])+' '+low_temp+'/'+high_temp+' '+forecast_color(fc['text'].ljust(24,' ')) + sun_moon_tide
+
+#+ " wind = " + xyz['query']['results']['channel']['wind'].to_s + sunmoon(date)
+
+end
