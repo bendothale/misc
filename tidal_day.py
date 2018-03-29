@@ -151,20 +151,20 @@ first_high_rotation_factor = -360*first_high_time/min_per_day
 tide1 = tide.rotate(first_high_rotation_factor)
 image.paste(tide1, high_tidal_ring, tide1)
 
-tide = draw_tide_quad(tide_space, first_high, second_low, (0, 0, 0, 200))
-first_low_rotation_factor = -360*first_low_time/min_per_day
-tide1 = tide.rotate(first_low_rotation_factor)
-image.paste(tide1, high_tidal_ring, tide1)
-
-tide = draw_tide_quad(tide_space, second_low, second_high, (0, 0, 0, 200))
-second_high_rotation_factor = -360*second_high_time/min_per_day
-tide1 = tide.rotate(second_high_rotation_factor)
-image.paste(tide1, high_tidal_ring, tide1)
-
-tide = draw_tide_quad(tide_space, second_high, first_low, (0, 0, 0, 200))
-second_low_rotation_factor = -360*second_low_time/min_per_day
-tide1 = tide.rotate(second_low_rotation_factor)
-image.paste(tide1, high_tidal_ring, tide1)
+#tide = draw_tide_quad(tide_space, first_high, second_low, (0, 0, 0, 200))
+#first_low_rotation_factor = -360*first_low_time/min_per_day
+#tide1 = tide.rotate(first_low_rotation_factor)
+#image.paste(tide1, high_tidal_ring, tide1)
+#
+#tide = draw_tide_quad(tide_space, second_low, second_high, (0, 0, 0, 200))
+#second_high_rotation_factor = -360*second_high_time/min_per_day
+#tide1 = tide.rotate(second_high_rotation_factor)
+#image.paste(tide1, high_tidal_ring, tide1)
+#
+#tide = draw_tide_quad(tide_space, second_high, first_low, (0, 0, 0, 200))
+#second_low_rotation_factor = -360*second_low_time/min_per_day
+#tide1 = tide.rotate(second_low_rotation_factor)
+#image.paste(tide1, high_tidal_ring, tide1)
 
 # rotate the entire image based on the current time.
 current_time = convert_time_to_minutes(now.hour, now.minute, 'am')#(4, 45, 'PM')

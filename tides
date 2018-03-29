@@ -1,0 +1,76 @@
+#!/usr/bin/ruby 
+
+DATE = 0
+HIGH_TIDE_1_TIME = 1
+HIGH_TIDE_1_HEIGHT = 2
+HIGH_TIDE_2_TIME = 3
+HIGH_TIDE_2_HEIGHT = 4
+LOW_TIDE_1_TIME = 5
+LOW_TIDE_1_HEIGHT = 6
+LOW_TIDE_2_TIME = 7
+LOW_TIDE_2_HEIGHT = 8
+
+require 'csv'
+require 'nokogiri'
+require 'json'
+
+input = `curl 'https://www.weatherforyou.com/tides/tides.php?place=pescadero%2c+CA&month=#{ARGV[0]}&year=#{ARGV[1]}' 2>/dev/null`
+
+document = Nokogiri::HTML(input)
+list = []
+counter = 0
+
+document.at('table').search('tr').each do |row|
+
+  next if (counter += 1) < 2
+
+  cells = row.search('th, td').map { |cell| cell.text.strip }
+
+  cell_hash = {}
+  cell_hash[:Date] = cells[DATE]
+  cell_hash[:High_1_Time] = cells[HIGH_TIDE_1_TIME] 
+  cell_hash[:High_1_Height] = cells[HIGH_TIDE_1_HEIGHT]
+  cell_hash[:High_2_Time] = cells[HIGH_TIDE_2_TIME]
+  cell_hash[:High_2_Height] = cells[HIGH_TIDE_2_HEIGHT]
+  cell_hash[:Low_1_Time] = cells[LOW_TIDE_1_TIME]
+  cell_hash[:Low_1_Height] = cells[LOW_TIDE_1_HEIGHT]
+  cell_hash[:Low_2_Time] = cells[LOW_TIDE_2_TIME]
+  cell_hash[:Low_2_Height] = cells[LOW_TIDE_2_HEIGHT]
+
+  if(cell_hash[:High_2_Height][0] == '-')
+    cell_hash[:High_2_Height] = cell_hash[:High_1_Height]
+  end
+
+  if(cell_hash[:High_2_Time][0] == '-')
+    cell_hash[:High_1_Time].gsub!('p','a')
+    cell_hash[:High_2_Time] = cell_hash[:High_1_Time].gsub('a','p')
+  end
+
+  if(cell_hash[:Low_1_Height][0] == '-')
+    cell_hash[:Low_1_Height] = cell_hash[:Low_2_Height]
+  end
+
+  if(cell_hash[:Low_1_Time][0] == '-')
+    cell_hash[:Low_2_Time].gsub!('a','p')
+    cell_hash[:Low_1_Time] = cell_hash[:Low_2_Time].gsub('p','a')
+  end
+
+  list << cell_hash
+
+#  if cells.first.to_i == 18
+#    puts CSV.generate_line(cells)
+#     puts 'DATE = '+cells[DATE]
+#     puts 'HIGH_TIDE_1_TIME = '+cells[HIGH_TIDE_1_TIME]
+#     puts 'HIGH_TIDE_1_HEIGHT = '+cells[HIGH_TIDE_1_HEIGHT]
+#     puts 'HIGH_TIDE_2_TIME = '+cells[HIGH_TIDE_2_TIME]
+#     puts 'HIGH_TIDE_2_HEIGHT = '+cells[HIGH_TIDE_2_HEIGHT]
+#     puts 'LOW_TIDE_1_TIME = '+cells[LOW_TIDE_1_TIME]
+#     puts 'LOW_TIDE_1_HEIGHT = '+cells[LOW_TIDE_1_HEIGHT]
+#     puts 'LOW_TIDE_2_TIME = '+cells[LOW_TIDE_2_TIME]
+#     puts 'LOW_TIDE_2_HEIGHT = '+cells[LOW_TIDE_2_HEIGHT]
+#  end
+
+end
+
+puts list.to_json
+
