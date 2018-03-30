@@ -1,0 +1,147 @@
+    1  ifconfig
+    2  who am I
+    3  ls /etc/hosts
+    4  cat /etc/hosts
+    5  sudo vi /etc/hostname
+    6  thanx
+    7  oic
+    8  exit
+    9  ifconfig
+   10  thanx anyway[3~
+   11  ssh pi@[4~
+   12  ssh pi@192.168.0.201
+   13  scp pi@192.168.0.201:/etc/dhcpcd.conf .
+   14  vi dhcpcd.conf 
+   15  cat /etc/hostname
+   16  diff dhcpcd.conf /etc/dhcpcd.conf 
+   17  history
+   18  vm dhcpcd.conf /etc
+   19  mv dhcpcd.conf /etc
+   20  sudo mv dhcpcd.conf /etc
+   21  shutdown -r
+   22  sudo shutdown -r
+   23  ifconfig
+   24  exit
+   25  ifconfg
+   26  ifconfig
+   27  ls /etc/hostname
+   28  cat /etc/hostname
+   29  thanx
+   30  ifconfig | more
+   31  sudo apt-get git
+   32  sudo apt-get install git
+   33  git hekp
+   34  git help
+   35  git clone http://www.github.com/pcarmody
+   36  git clone http://www.github.com/pcarmody/misc
+   37  ls
+   38  ls misc
+   39  git clone http://www.github.com/pcarmody/dev
+   40  sudo apt-get install ruby
+   41  ls bin
+   42  mkdir bin
+   43  mkdir bin/data
+   44  ls misc
+   45  cp misc/* bin
+   46  thanx
+   47  sudo apt-get install gem
+   48  ruby
+   49  sudo apt-get install gem
+   50  sudo apt-get update
+   51  weather 
+   52  . bin/weather
+   53  ruby
+   54  thanx
+   55  more bin/weather
+   56  which ruby
+   57  suod apt-get update
+   58  sudo apt-get update
+   59  sudo apt-get install ruby
+   60  bin/weather 
+   61  suod gem install colorize
+   62  sudo gem install colorize
+   63  sudo gem install nokokiri
+   64  grep nok bin/*
+   65  more bin/tides
+   66  ls bin
+   67  ls misc
+   68  bin/weather
+   69  vim bin/weather
+   70  vi bin/weather
+   71  thanx
+   72  ruby
+   73  bin/weather
+   74  ls -thor weather
+   75  ls -thor bin
+   76  thanx
+   77  vi bin/weather
+   78  wget
+   79  vi bin/weather
+   80  bin/weather
+   81  vi bin/weather
+   82  bin/weather
+   83  wget 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22pescadero%2C%20ca%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys' --output-document=/home/paul/bin/weather.json
+   84  pwd
+   85  vi bin/weather
+   86  bin/weather
+   87  vi bin/weather
+   88  bin/weather
+   89  ls -thor bin/data
+   90  thanx
+   91  ls bin/tide*
+   92  ls misc/tide*
+   93  vi bin/weather
+   94  pwd
+   95  cd misc
+   96  git pusll
+   97  git pull
+   98  ls -thor
+   99  cp tides ~/bin
+  100  cd ..
+  101  ls -thor bin/data
+  102  rm bin/data/tides_201803 
+  103  weather
+  104  bin/weather
+  105  tieds
+  106  ls -thor bin/data
+  107  rm bin/data/tides_201803 
+  108  ls -thor bin/data
+  109  ls bin/weather
+  110  bin/weather
+  111  vi bin/weather
+  112  bin/tides 3 2018
+  113  gem install nokogiri
+  114  sudo gem install nokogiri
+  115  ruby -v
+  116  sudo apt-get install ruby-2.4
+  117  gem install ruby-2.4
+  118  sudo apt-get install build-essential patch ruby-dev zlib1g-dev liblzma-dev
+  119  gem install ruby-2.4
+  120  gem install nokogiri
+  121  sudo gem install nokogiri
+  122  rm bin/data/tides_201803 
+  123  bin/tides 3 2018
+  124  bin/weather
+  125  cd misc
+  126  python tidal_day.py 
+  127  vi tidal_day.py 
+  128  python tidal_day.py 
+  129  hmmm
+  130  ps aux | grep display
+  131  sudo apt-get install python-imaging
+  132  python tidal_day.py 
+  133  sudo apt-get install libjpeg libjpeg-dev ligfreetype6 libfreetyp6-de zlib1g-dev
+  134  sudo apt-get build-dep python-imaging
+  135  ls /etc/apt/sources.lisst
+  136  ls /etc/apt/sources.list-
+  137  ls /etc/apt/*.list
+  138  more /etc/apt/sources.list
+  139  suod vi /etc/apt/sources.list
+  140  sudo vi /etc/apt/sources.list
+  141  sudo apt-get update
+  142  python tidal_day.py 
+  143  sudo apt-get install python-imaging-tk
+  144  python tidal_day.py 
+  145  sudo apt install imagemagick
+  146  python tidal_day.py 
+  147  history > history.txt

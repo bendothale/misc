@@ -83,8 +83,8 @@ def relative_tide_position(feet):
 # retrieve the sun and moon data
 #
 
-file_name = '/home/paul/bin/data/sunmoon_'+str(year)+str(month)
-#sun_moon_file = open('/home/paul/bin/data/sunmoon_201803')
+file_name = '/home/pi/bin/data/sunmoon_'+str(year)+str(month)
+#sun_moon_file = open('/home/pi/bin/data/sunmoon_201803')
 sun_moon_file = open(file_name)
 sun_moon = json.load(sun_moon_file)
 sun_moon_file.close()
@@ -120,7 +120,7 @@ low_tide = draw.ellipse(low_tidal_ring,'red','blue')
 lowest_tide = draw.ellipse(ring_shape(4),'black','blue')
 
 # retrieve tidal information
-tides_file = open('/home/paul/bin/data/tides_201803')
+tides_file = open('/home/pi/bin/data/tides_201803')
 tides = json.load(tides_file)
 tides_file.close()
 
