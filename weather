@@ -4,8 +4,10 @@ require 'colorize'
 
 #temp_ranges = [ 30, 45, 60, 75, 90, 105 ]
 temp_ranges = [ 40, 50, 60, 70, 80, 90]
-tide_ranges = [ 35, 40, 45, 50, 55, 60 ]
-low_tide_ranges = [ 0, 4, 8, 12, 16, 20, 28 ]
+#tide_ranges = [ 35, 40, 45, 50, 55, 60 ]
+#low_tide_ranges = [ 0, 4, 8, 12, 16, 20, 28 ]
+tide_ranges = [ 60, 80, 100, 120, 140, 160 ]
+low_tide_ranges = [ -40, -20, 0, 20, 40, 60 ]
 
 file_name = '/home/paul/bin/weather.json'
 
@@ -66,28 +68,29 @@ def time_rel sunrise, moonrise
 
 #  puts sunrise.to_s
 #  puts moonrise.to_s
-  sun_hm = sunrise[0].split(':')
-  moon_hm = moonrise[0].split(':')
-  sun_abs = sun_hm[0].to_i * 60 + sun_hm[1].to_i
-  moon_abs = moon_hm[0].to_i * 60 + moon_hm[1].to_i
-
-  if sunrise[1] != moonrise[1] # moonrise is after noon
-    moon_abs += 12*60
-  else
-    moon_abs = moon_hm[1].to_i if moon_hm[0].to_i == 12
-  end
-
-  if moon_abs > sun_abs
-    moon_rel = moon_abs - sun_abs
-  else
-    moon_rel = (sun_abs - moon_abs) * -1
-  end
-
-  if moon_rel < 0
-    moon_time = (-1*(moon_rel.abs / 60)).to_s.rjust(2,' ') + ':' + (moon_rel.abs % 60).to_s.rjust(2, '0')
-  else
-    moon_time = (moon_rel / 60).to_s.rjust(2,' ') + ':' + (moon_rel % 60).to_s.rjust(2, '0')
-  end
+#  sun_hm = sunrise[0].split(':')
+#  moon_hm = moonrise[0].split(':')
+#  sun_abs = sun_hm[0].to_i * 60 + sun_hm[1].to_i
+#  moon_abs = moon_hm[0].to_i * 60 + moon_hm[1].to_i
+#
+#  if sunrise[1] != moonrise[1] # moonrise is after noon
+#    moon_abs += 12*60
+#  else
+#    moon_abs = moon_hm[1].to_i if moon_hm[0].to_i == 12
+#  end
+#
+#  if moon_abs > sun_abs
+#    moon_rel = moon_abs - sun_abs
+#  else
+#    moon_rel = (sun_abs - moon_abs) * -1
+#  end
+#
+#  if moon_rel < 0
+#    moon_time = (-1*(moon_rel.abs / 60)).to_s.rjust(2,' ') + ':' + (moon_rel.abs % 60).to_s.rjust(2, '0')
+#  else
+#    moon_time = (moon_rel / 60).to_s.rjust(2,' ') + ':' + (moon_rel % 60).to_s.rjust(2, '0')
+#  end
+  moon_time = moonrise.to_i - sunrise.to_i
 
   moon_time
 
@@ -133,9 +136,11 @@ def get_tides_data date
 
   if $tides_data == nil
 
-    tides_file_name = "/home/paul/bin/data/tides_#{date[:Year]+date[:Month].rjust(2, '0')}"
+#    tides_file_name = "/home/paul/bin/data/tides_#{date[:Year]+date[:Month].rjust(2, '0')}"
+    tides_file_name = "/home/paul/bin/data/lunar_info_#{date[:Year]+date[:Month].rjust(2, '0')}"
 
-    `~/bin/tides #{date[:Month]} #{date[:Year]} > #{tides_file_name}` if !File.exists? tides_file_name
+#    `~/bin/tides #{date[:Month]} #{date[:Year]} > #{tides_file_name}` if !File.exists? tides_file_name
+    `~/bin/lunar_info #{date[:Month]} #{date[:Year]} > #{tides_file_name}` if !File.exists? tides_file_name
 
     $tides_data = JSON.parse File.read tides_file_name
 
@@ -150,9 +155,11 @@ def get_sunmoon_data date
 
   if $sunmoon_data == nil
 
-    sunmoon_file_name = "/home/paul/bin/data/sunmoon_#{date[:Year]+date[:Month].rjust(2, '0')}"
+#    sunmoon_file_name = "/home/paul/bin/data/sunmoon_#{date[:Year]+date[:Month].rjust(2, '0')}"
+    sunmoon_file_name = "/home/paul/bin/data/lunar_info_#{date[:Year]+date[:Month].rjust(2, '0')}"
 
-    `~/bin/sunmoon #{date[:Month]} #{date[:Year]} > #{sunmoon_file_name}` if !File.exists? sunmoon_file_name
+#    `~/bin/sunmoon #{date[:Month]} #{date[:Year]} > #{sunmoon_file_name}` if !File.exists? sunmoon_file_name
+    `~/bin/lunar_info #{date[:Month]} #{date[:Year]} > #{sunmoon_file_name}` if !File.exists? sunmoon_file_name
 
     $sunmoon_data = JSON.parse File.read sunmoon_file_name
 
@@ -172,19 +179,19 @@ if ARGV[0] == 'tides'
 
   moon_rel = time_rel(sunmoon['SunRise'], sunmoon['MoonRise'])
 
-  high_tide = temp_color(tides['High_1_Height'], (tides['High_1_Height'].to_f * 10.0).to_i, tide_ranges) 
-  low_tide = temp_color(tides['Low_1_Height'], (tides['Low_1_Height'].to_f * 10.0).to_i, low_tide_ranges) 
+  high_tide = temp_color(tides['HighTide'][0]['Height'].to_s, (tides['HighTide'][0]['Height'].to_f * 10.0).to_i, tide_ranges) 
+  low_tide = temp_color(tides['LowTide'][0]['Height'].to_s, (tides['LowTide'][0]['Height'].to_f * 10.0).to_i, low_tide_ranges) 
 
-  puts "Sun: #{sunmoon['SunRise'][0]} #{sunmoon['SunSet'][0]}"
-  puts "Moon: #{sunmoon['MoonRise'][0]} #{sunmoon['MoonSet'][0]}"
-  puts "1st High Tide: #{tides['High_1_Time']} #{high_tide} feet"
-  puts "1st Low Tide: #{tides['Low_1_Time']} #{low_tide} feet"
+  puts "Sun: #{sunmoon['SunRise']} #{sunmoon['SunSet']}"
+  puts "Moon: #{sunmoon['MoonRise']} #{sunmoon['MoonSet']}"
+  puts "1st High Tide: #{tides['HighTide'][0]['Time']} #{high_tide} feet"
+  puts "1st Low Tide: #{tides['LowTide'][0]['Time']} #{low_tide} feet"
 
-  high_tide = temp_color(tides['High_2_Height'], (tides['High_2_Height'].to_f * 10.0).to_i, tide_ranges) 
-  low_tide = temp_color(tides['Low_2_Height'], (tides['Low_2_Height'].to_f * 10.0).to_i, low_tide_ranges) 
+  high_tide = temp_color(tides['HighTide'][1]['Height'].to_s, (tides['HighTide'][0]['Height'].to_f * 10.0).to_i, tide_ranges) 
+  low_tide = temp_color(tides['LowTide'][1]['Height'].to_s, (tides['LowTide'][0]['Height'].to_f * 10.0).to_i, low_tide_ranges) 
 
-  puts "2nd High Tide: #{tides['High_2_Time']} #{high_tide} feet"
-  puts "2nd Low Tide: #{tides['Low_2_Time']} #{low_tide} feet"
+  puts "2nd High Tide: #{tides['HighTide'][1]['Time']} #{high_tide} feet"
+  puts "2nd Low Tide: #{tides['LowTide'][0]['Time']} #{low_tide} feet"
 
   exit
 
@@ -202,9 +209,10 @@ xyz['query']['results']['channel']['item']['forecast'].each do | fc |
   sunmoon = get_sunmoon_data date
   tides = get_tides_data date
 
+#  puts sunmoon
   moon_rel = time_rel(sunmoon['SunRise'], sunmoon['MoonRise'])
-  tide_rel = time_rel(sunmoon['SunRise'], tides['High_1_Time'].split(' '))
-  low_tide_rel = time_rel(sunmoon['SunRise'], tides['Low_1_Time'].split(' '))
+  tide_rel = time_rel(sunmoon['SunRise'], tides['HighTide'][0]['Time'])
+  low_tide_rel = time_rel(sunmoon['SunRise'], tides['LowTide'][0]['Time'])
   low_temp = temp_color(fc['low'], fc['low'].to_i, temp_ranges)
   high_temp = temp_color(fc['high'], fc['high'].to_i, temp_ranges)
 
@@ -212,8 +220,9 @@ xyz['query']['results']['channel']['item']['forecast'].each do | fc |
       sunmoon['SunRise'][0].to_s.light_yellow + ' ' + 
 #      temp_color(moon_rel, moon_rel.to_i, moon_ranges) + ' ' + 
       moon_rel.to_s + ' ' +
-      temp_color(tide_rel, (tides['High_1_Height'].to_f * 10.0).to_i, tide_ranges) + ' ' +
-      temp_color(low_tide_rel, (tides['Low_1_Height'].to_f * 10.0).to_i, low_tide_ranges) 
+      temp_color(tide_rel.to_s, tides['HighTide'][0]['Height'], tide_ranges) + ' ' +
+      temp_color(low_tide_rel.to_s, tides['LowTide'][0]['Height'], low_tide_ranges) 
+      ' '
     ).to_s.rjust(20,' ')
   
   puts '  '.light_white+fc['day']+' '+format_date(fc['date'])+' '+low_temp+'/'+high_temp+' '+forecast_color(fc['text'].ljust(24,' ')) + sun_moon_tide

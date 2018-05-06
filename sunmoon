@@ -1,7 +1,22 @@
 #!/usr/bin/ruby
 
 require 'json'
+require 'nokogiri'
 
+input = `curl 'https://www.tide-forecast.com/locations/Ano-Nuevo-Island-California/tides/latest' `
+
+document = Nokogiri::HTML(input)
+
+list = []
+
+document.at('table').search('tr').each do |row|
+  cells = row.search('th, td').map { |cell| cell.text.strip.chomp }
+  puts cells
+  puts '>>>>>>>>>>>>>>>>>>'
+  { :SunRise => sun_rise, :SunSet => sun_set, :MoonRise => moon_rise, :MoonSet => moon_set, :Moon_Rel =>moon_rel, :Delta => delta }
+end
+
+exit
 days_in_month = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 if ARGV[0].to_i % 4 == 0
