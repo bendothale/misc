@@ -146,7 +146,12 @@ def get_tides_data date
 
   end
 
-  $tides_data[date[:Day].to_i]
+#  $tides_data[date[:Day].to_i]
+  $tides_data.each do | sm |
+     break if !sm
+     return sm if sm['Month'].to_i == date[:Month].to_i && sm['Date'].to_i == date[:Day].to_i
+  end
+  return $tides_data.first
 end
 
 $sunmoon_data = nil
@@ -165,7 +170,11 @@ def get_sunmoon_data date
 
   end
 
-  $sunmoon_data[date[:Day].to_i-1]
+  $sunmoon_data.each do | sm |
+     break if !sm
+     return sm if sm['Month'].to_i == date[:Month].to_i && sm['Date'].to_i == date[:Day].to_i
+  end
+  return $sunmoon_data.first
 end
 
 if ARGV[0] == 'tides'
@@ -184,14 +193,14 @@ if ARGV[0] == 'tides'
 
   puts "Sun: #{sunmoon['SunRise']} #{sunmoon['SunSet']}"
   puts "Moon: #{sunmoon['MoonRise']} #{sunmoon['MoonSet']}"
-  puts "1st High Tide: #{tides['HighTide'][0]['Time']} #{high_tide} feet"
-  puts "1st Low Tide: #{tides['LowTide'][0]['Time']} #{low_tide} feet"
+  puts "1st High Tide: #{tides['HighTide'][0]['Time']} #{high_tide} cm"
+  puts "1st Low Tide: #{tides['LowTide'][0]['Time']} #{low_tide} cm"
 
   high_tide = temp_color(tides['HighTide'][1]['Height'].to_s, (tides['HighTide'][0]['Height'].to_f * 10.0).to_i, tide_ranges) 
   low_tide = temp_color(tides['LowTide'][1]['Height'].to_s, (tides['LowTide'][0]['Height'].to_f * 10.0).to_i, low_tide_ranges) 
 
-  puts "2nd High Tide: #{tides['HighTide'][1]['Time']} #{high_tide} feet"
-  puts "2nd Low Tide: #{tides['LowTide'][0]['Time']} #{low_tide} feet"
+  puts "2nd High Tide: #{tides['HighTide'][1]['Time']} #{high_tide} cm"
+  puts "2nd Low Tide: #{tides['LowTide'][0]['Time']} #{low_tide} cm"
 
   exit
 
